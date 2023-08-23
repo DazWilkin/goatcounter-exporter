@@ -1,4 +1,7 @@
 .env.test
 .github
 .vscode
+
+cosign.key
+
 samples
