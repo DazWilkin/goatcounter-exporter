@@ -46,6 +46,29 @@ All metrics are prefixed `goatcounter_exporter_`
 
 |Name|Type|Description|
 |----|----|-----------|
+|`goatcounter_exporter_build_info`|Counter||
+|`goatcounter_exporter_paths_total`|Gauge||
+|`goatcounter_exporter_start_time`|Gauge||
+|`goatcounter_exporter_stats_hits`|Gauge||
+|`goatcounter_exporter_stats_total`|Gauge||
+
+```
+# HELP goatcounter_exporter_build_info A metric with a constant '1' value labeled by OS version, Go version, and the Git commit of the exporter
+# TYPE goatcounter_exporter_build_info counter
+goatcounter_exporter_build_info{git_commit="",go_version="",os_version=""}
+# HELP goatcounter_exporter_paths_total List total of paths
+# TYPE goatcounter_exporter_paths_total gauge
+goatcounter_exporter_paths_total
+# HELP goatcounter_exporter_start_time Exporter start time in Unix epoch seconds
+# TYPE goatcounter_exporter_start_time gauge
+goatcounter_exporter_start_time
+# HELP goatcounter_exporter_stats_hits pageview and visitor stats
+# TYPE goatcounter_exporter_stats_hits gauge
+goatcounter_exporter_stats_hits{day="",path=""}
+# HELP goatcounter_exporter_stats_total List total pageview counts
+# TYPE goatcounter_exporter_stats_total gauge
+goatcounter_exporter_stats_total
+```
 
 ## [Sigstore](https://www.sigstore.dev/)
 

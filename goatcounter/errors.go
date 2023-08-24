@@ -1,9 +1,17 @@
 package goatcounter
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
+var _ error = (*ErrorResponse)(nil)
+
+// ErrorResponse is a type that represents GoatCounter API error responses
+// ErrorResponse implements the error interface
 type ErrorResponse struct {
-	XError string `json:"error,omitempty"`
+	// GError is used to avoid conflicting with the interface's Error method
+	// The field must be Exported for JSON marshaling
+	GError string `json:"error,omitempty"`
 	Errors Errors `json:"errors,omitempty"`
 }
 

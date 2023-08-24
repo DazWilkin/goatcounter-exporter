@@ -18,7 +18,8 @@ var (
 	}`)
 )
 
-func TestError(t *testing.T) {
+// TestErrorResponse tests whether JSON unmarshals correctly to ErrorResponse
+func TestErrorResponse(t *testing.T) {
 	e := &ErrorResponse{}
 	if err := json.Unmarshal(simple, e); err != nil {
 		log.Fatal(err)

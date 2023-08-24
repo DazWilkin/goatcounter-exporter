@@ -1,15 +1,19 @@
 package goatcounter
 
-import "net/http"
+import "fmt"
 
-type ExportsInterface interface{}
-
-type ExportsClient struct {
-	client *http.Client
+// ExportsInterface is an interface that defines methods for GoatCounter Exports endpoints
+type ExportsInterface interface {
+	URL(string) string
 }
 
-func NewExportsClient(client *http.Client) ExportsInterface {
-	return &ExportsClient{
-		client: client,
-	}
+// ExportsClient is a type that implements methods for GoatCounter Exports endpoints
+type ExportsClient struct {
+	client *Client
+	path   string
+}
+
+// Url is a method that returns the endpoint's method URL
+func (c *ExportsClient) URL(path string) string {
+	return fmt.Sprintf("%s/%s", c.path, path)
 }

@@ -7,46 +7,49 @@ import (
 	"net/http"
 )
 
+// StatsInterface is an interface that defines methods for GoatCounter Stats endpoints
 type StatsInterface interface {
-	Total() (*StatsTotal, error)
-	Hits() (*StatsHits, error)
+	Total() (*Total, error)
+	Hits() (*HitsResponse, error)
+	URL(string) string
 }
 
 var _ StatsInterface = (*StatsClient)(nil)
 
+// StatsClient is a type that implements methods for GoatCounter Stats endpoints
 type StatsClient struct {
 	client *Client
+	path   string
 }
 
-func (c *StatsClient) Hits() (*StatsHits, error) {
+// Hits is a method that implements GoatCounter /stats/hits
+func (c *StatsClient) Hits() (*HitsResponse, error) {
 	ctx := context.Background()
-
-	endpoint := Stats
-	url := fmt.Sprintf("%s/hits", c.client.Url(endpoint))
 	method := http.MethodGet
+	url := fmt.Sprintf("%s/hits", c.path)
 
-	hits := &StatsHits{}
+	hitsResponse := &HitsResponse{}
 	resp, err := c.client.Do(ctx, method, url, nil)
 	if err != nil {
 		msg := "unable to get total pageview and visitor counts"
-		return hits, fmt.Errorf(msg)
+		return hitsResponse, fmt.Errorf(msg)
 	}
 
-	if err := json.Unmarshal(resp, hits); err != nil {
+	if err := json.Unmarshal(resp, hitsResponse); err != nil {
 		msg := "unable to unmarshal response"
-		return hits, fmt.Errorf(msg)
+		return hitsResponse, fmt.Errorf(msg)
 	}
 
-	return hits, nil
+	return hitsResponse, nil
 }
-func (c *StatsClient) Total() (*StatsTotal, error) {
+
+// Total is a method that implements GoatCounter /stats/total
+func (c *StatsClient) Total() (*Total, error) {
 	ctx := context.Background()
-
-	endpoint := Stats
-	url := fmt.Sprintf("%s/total", c.client.Url(endpoint))
 	method := http.MethodGet
+	url := fmt.Sprintf("%s/total", c.path)
 
-	total := &StatsTotal{}
+	total := &Total{}
 	resp, err := c.client.Do(ctx, method, url, nil)
 	if err != nil {
 		msg := "unable to get total pageview counts"
@@ -59,4 +62,9 @@ func (c *StatsClient) Total() (*StatsTotal, error) {
 	}
 
 	return total, nil
+}
+
+// Url is a method that returns the endpoint's method URL
+func (c *StatsClient) URL(path string) string {
+	return fmt.Sprintf("%s/%s", c.path, path)
 }

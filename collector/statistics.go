@@ -50,7 +50,12 @@ func (c *StatisticsCollector) Collect(ch chan<- prometheus.Metric) {
 		total, err := c.client.Stats().Total()
 		if err != nil {
 			msg := "unable to collect /stats/total"
-			log.Print(msg)
+			if errResponse, ok := err.(*goatcounter.ErrorResponse); ok {
+				log.Printf("%s\n%+v", msg, errResponse)
+				return
+			}
+
+			log.Printf("%s\n%+v", msg, err)
 			return
 		}
 
@@ -68,7 +73,11 @@ func (c *StatisticsCollector) Collect(ch chan<- prometheus.Metric) {
 		hits, err := c.client.Stats().Hits()
 		if err != nil {
 			msg := "unable to collect /stats/hits"
-			log.Print(msg)
+			if errResponse, ok := err.(*goatcounter.ErrorResponse); ok {
+				log.Printf("%s\n%+v", msg, errResponse)
+				return
+			}
+			log.Printf("%s\n%+v", msg, err)
 			return
 		}
 
