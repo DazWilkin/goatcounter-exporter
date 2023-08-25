@@ -1,7 +1,7 @@
 package collector
 
 import (
-	"log"
+	"log/slog"
 	"sync"
 
 	"github.com/DazWilkin/goatcounter-exporter/goatcounter"
@@ -11,24 +11,27 @@ import (
 // StatisticsCollector collects metrics on GoatCounter's /stats endpoint
 type StatisticsCollector struct {
 	client *goatcounter.Client
+	logger *slog.Logger
 
 	Total *prometheus.Desc
 	Hits  *prometheus.Desc
 }
 
 // NewStatisticsCollector is a function that returns a new StatisticsCollector
-func NewStatisticsCollector(client *goatcounter.Client) *StatisticsCollector {
+func NewStatisticsCollector(client *goatcounter.Client, logger *slog.Logger) *StatisticsCollector {
+	logger.Info("Creating StatisticsCollector")
 	return &StatisticsCollector{
 		client: client,
+		logger: logger,
 
 		Total: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, subsystem, "stats_total"),
+			BuildFQName("stats_total", logger),
 			"List total pageview counts",
 			[]string{},
 			nil,
 		),
 		Hits: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, subsystem, "stats_hits"),
+			BuildFQName("stats_hits", logger),
 			"pageview and visitor stats",
 			[]string{
 				"path",
@@ -41,9 +44,12 @@ func NewStatisticsCollector(client *goatcounter.Client) *StatisticsCollector {
 
 // Collect implements Prometheus' Collector interface and is used to collect metrics
 func (c *StatisticsCollector) Collect(ch chan<- prometheus.Metric) {
+	logger := c.logger.With("method", "Collect")
+
 	var wg sync.WaitGroup
 
 	// Corresponds to /stats/total
+	logger.Info("Enumerating Statistics Total")
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -51,22 +57,32 @@ func (c *StatisticsCollector) Collect(ch chan<- prometheus.Metric) {
 		if err != nil {
 			msg := "unable to collect /stats/total"
 			if errResponse, ok := err.(*goatcounter.ErrorResponse); ok {
-				log.Printf("%s\n%+v", msg, errResponse)
+				logger.Info(msg,
+					"err", errResponse,
+				)
 				return
 			}
 
-			log.Printf("%s\n%+v", msg, err)
+			logger.Info(msg,
+				"error", err,
+			)
 			return
 		}
 
+		value := float64(total.Total)
+		logger.Debug("Recording measurement",
+			"desc", c.Total,
+			"value", value,
+		)
 		ch <- prometheus.MustNewConstMetric(
 			c.Total,
 			prometheus.GaugeValue,
-			float64(total.Total),
+			value,
 		)
 	}()
 
 	// Corresponds to /stats/hits
+	logger.Info("Enumerating Statistics Hits")
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -74,19 +90,28 @@ func (c *StatisticsCollector) Collect(ch chan<- prometheus.Metric) {
 		if err != nil {
 			msg := "unable to collect /stats/hits"
 			if errResponse, ok := err.(*goatcounter.ErrorResponse); ok {
-				log.Printf("%s\n%+v", msg, errResponse)
+				logger.Info(msg,
+					"error", errResponse,
+				)
 				return
 			}
-			log.Printf("%s\n%+v", msg, err)
+			logger.Info(msg,
+				"error", err,
+			)
 			return
 		}
 
 		for _, hit := range hits.Hits {
 			for _, stat := range hit.Stats {
+				value := float64(stat.Daily)
+				logger.Debug("Recording measurement",
+					"desc", c.Hits,
+					"value", value,
+				)
 				ch <- prometheus.MustNewConstMetric(
 					c.Hits,
 					prometheus.GaugeValue,
-					float64(stat.Daily),
+					value,
 					[]string{
 						hit.Path,
 						stat.Day,
