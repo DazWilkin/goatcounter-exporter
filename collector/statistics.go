@@ -25,7 +25,9 @@ func NewStatisticsCollector(client *goatcounter.Client) *StatisticsCollector {
 			prometheus.BuildFQName(namespace, subsystem, "stats_total"),
 			"List total pageview counts",
 			[]string{},
-			nil,
+			prometheus.Labels{
+				"code": client.Code,
+			},
 		),
 		Hits: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "stats_hits"),
@@ -34,7 +36,9 @@ func NewStatisticsCollector(client *goatcounter.Client) *StatisticsCollector {
 				"path",
 				"day",
 			},
-			nil,
+			prometheus.Labels{
+				"code": client.Code,
+			},
 		),
 	}
 }

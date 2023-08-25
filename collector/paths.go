@@ -23,7 +23,9 @@ func NewPathsCollector(client *goatcounter.Client) *PathsCollector {
 			prometheus.BuildFQName(namespace, subsystem, "paths_total"),
 			"List total of paths",
 			[]string{},
-			nil,
+			prometheus.Labels{
+				"code": client.Code,
+			},
 		),
 	}
 }
