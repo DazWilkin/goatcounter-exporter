@@ -1,8 +1,8 @@
 # A Prometheus Exporter for [GoatCounter](https://goatcounter.com)
 
-[![build](https://github.com/DazWilkin/goatcounter-exporter/actions/workflows/build.yml/badge.svg)](https://github.com/DazWilkin/goatcounter-exporter/actions/workflows/build.yml)
+[![GitHub Actions](https://github.com/DazWilkin/goatcounter-exporter/actions/workflows/build.yml/badge.svg)](https://github.com/DazWilkin/goatcounter-exporter/actions/workflows/build.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/DazWilkin/goatcounter-exporter.svg)](https://pkg.go.dev/github.com/DazWilkin/goatcounter-exporter)
 [![Go Report Card](https://goreportcard.com/badge/github.com/DazWilkin/goatcounter-exporter)](https://goreportcard.com/report/github.com/DazWilkin/goatcounter-exporter)
-
 
 ## Run
 
@@ -21,7 +21,7 @@ podman run \
 --env=CODE=${CODE} \
 --env=TOKEN=${TOKEN} \
 --publish=${HOST_PORT}:${CONT_PORT}/tcp \
-ghcr.io/dazwilkin/goatcounter-exporter:ba490e4ff2ac3ecdcaf28df4bb2ad1791706b130 \
+ghcr.io/dazwilkin/goatcounter-exporter:6e71fc9773bbc945d7d4efffeb3f3eca009274be \
 --endpoint=:${CONT_PORT} \
 --path=/metrics
 ```
@@ -79,7 +79,7 @@ goatcounter_exporter_stats_total
 ```bash
 cosign verify \
 --key=./cosign.pub \
-ghcr.io/dazwilkin/goatcounter-exporter:ba490e4ff2ac3ecdcaf28df4bb2ad1791706b130
+ghcr.io/dazwilkin/goatcounter-exporter:6e71fc9773bbc945d7d4efffeb3f3eca009274be
 ```
 
 > **NOTE** `cosign.pub` may be downloaded [here](https://github.com/DazWilkin/goatcounter-exporter/blob/master/cosign.pub)

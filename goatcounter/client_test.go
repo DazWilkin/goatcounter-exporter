@@ -1,7 +1,6 @@
 package goatcounter
 
 import (
-	"log"
 	"os"
 	"testing"
 )
@@ -26,7 +25,7 @@ func TestCount(t *testing.T) {
 			t.Fatal(msg, err)
 		}
 
-		log.Println(count)
+		t.Log(count)
 	})
 }
 
@@ -46,7 +45,7 @@ func TestPaths(t *testing.T) {
 			t.Fatal(msg, err)
 		}
 
-		log.Println(paths)
+		t.Log(paths)
 	})
 }
 
@@ -67,7 +66,7 @@ func TestSites(t *testing.T) {
 			t.Fatal(msg, err)
 		}
 
-		log.Println(site)
+		t.Log(site)
 	})
 	t.Run("list", func(t *testing.T) {
 		sites, err := client.Sites().List()
@@ -79,7 +78,7 @@ func TestSites(t *testing.T) {
 			t.Fatal(msg, err)
 		}
 
-		log.Println(sites)
+		t.Log(sites)
 	})
 }
 
@@ -99,7 +98,7 @@ func TestStats(t *testing.T) {
 			t.Fatal(msg, err)
 		}
 
-		log.Println(hits)
+		t.Log(hits)
 	})
 	t.Run("total", func(t *testing.T) {
 		total, err := client.Stats().Total()
@@ -111,7 +110,7 @@ func TestStats(t *testing.T) {
 			t.Fatal(msg, err)
 		}
 
-		log.Println(total)
+		t.Log(total)
 	})
 }
 
@@ -131,6 +130,6 @@ func TestUsers(t *testing.T) {
 			t.Fatal(msg, err)
 		}
 
-		log.Println(user)
+		t.Log(user)
 	})
 }

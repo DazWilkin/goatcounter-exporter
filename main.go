@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"runtime"
@@ -62,38 +62,48 @@ func handleRoot(w http.ResponseWriter, _ *http.Request) {
 	})
 }
 func main() {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
 	code := os.Getenv(Code)
 	if code == "" {
-		log.Fatalf("Expected environment to contain  '%s' variable", Code)
+		logger.Info("Expected environment to contain variable",
+			"variable", Code,
+		)
 	}
 	token := os.Getenv(Token)
 	if token == "" {
-		log.Fatalf("Expected environment to contain '%s' variable", Token)
+		logger.Info("Expected environment to contain variable",
+			"variable", Token,
+		)
 	}
 
 	// For endpoint and metricsPath
 	flag.Parse()
 
 	if GitCommit == "" {
-		log.Println("[main] GitCommit value unchanged: expected to be set during build")
+		logger.Info("GitCommit value unchanged: expected to be set during build")
 	}
 	if OSVersion == "" {
-		log.Println("[main] OSVersion value unchanged: expected to be set during build")
+		logger.Info("OSVersion value unchanged: expected to be set during build")
 	}
 
 	client := goatcounter.NewClient(code, token)
 
 	registry := prometheus.NewRegistry()
 	registry.MustRegister(collector.NewExporterCollector(OSVersion, GoVersion, GitCommit, StartTime))
-	registry.MustRegister(collector.NewPathsCollector(client))
-	registry.MustRegister(collector.NewStatisticsCollector(client))
+	registry.MustRegister(collector.NewPathsCollector(client, logger))
+	registry.MustRegister(collector.NewStatisticsCollector(client, logger))
 
 	mux := http.NewServeMux()
 	mux.Handle("/", http.HandlerFunc(handleRoot))
 	mux.Handle("/healthz", http.HandlerFunc(handleHealthz))
 	mux.Handle(*metricsPath, promhttp.HandlerFor(registry, promhttp.HandlerOpts{}))
 
-	log.Printf("[main] Server starting (%s)", *endpoint)
-	log.Printf("[main] metrics served on: %s", *metricsPath)
-	log.Fatal(http.ListenAndServe(*endpoint, mux))
+	logger.Info("Server starting",
+		"endpoint", *endpoint,
+	)
+	logger.Info("metrics path",
+		"path", *metricsPath,
+	)
+	logger.Error("Server failed", http.ListenAndServe(*endpoint, mux))
 }
