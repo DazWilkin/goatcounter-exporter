@@ -1,6 +1,8 @@
 # A Prometheus Exporter for [GoatCounter](https://goatcounter.com)
 
 [![build](https://github.com/DazWilkin/goatcounter-exporter/actions/workflows/build.yml/badge.svg)](https://github.com/DazWilkin/goatcounter-exporter/actions/workflows/build.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/DazWilkin/goatcounter-exporter)](https://goreportcard.com/report/github.com/DazWilkin/goatcounter-exporter)
+
 
 ## Run
 
