@@ -21,7 +21,7 @@ podman run \
 --env=CODE=${CODE} \
 --env=TOKEN=${TOKEN} \
 --publish=${HOST_PORT}:${CONT_PORT}/tcp \
-ghcr.io/dazwilkin/goatcounter-exporter:9b5ee279984e9d0319aff90f3ef309bd22d4891c \
+ghcr.io/dazwilkin/goatcounter-exporter:6e71fc9773bbc945d7d4efffeb3f3eca009274be \
 --endpoint=:${CONT_PORT} \
 --path=/metrics
 ```
@@ -79,7 +79,7 @@ goatcounter_exporter_stats_total
 ```bash
 cosign verify \
 --key=./cosign.pub \
-ghcr.io/dazwilkin/goatcounter-exporter:9b5ee279984e9d0319aff90f3ef309bd22d4891c
+ghcr.io/dazwilkin/goatcounter-exporter:6e71fc9773bbc945d7d4efffeb3f3eca009274be
 ```
 
 > **NOTE** `cosign.pub` may be downloaded [here](https://github.com/DazWilkin/goatcounter-exporter/blob/master/cosign.pub)
