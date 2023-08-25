@@ -2,7 +2,6 @@ package goatcounter
 
 import (
 	"encoding/json"
-	"log"
 	"testing"
 )
 
@@ -22,9 +21,9 @@ var (
 func TestErrorResponse(t *testing.T) {
 	e := &ErrorResponse{}
 	if err := json.Unmarshal(simple, e); err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 	if err := json.Unmarshal(complex, e); err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 }
