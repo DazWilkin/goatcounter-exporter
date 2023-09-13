@@ -40,6 +40,8 @@ var _ ClientInterface = (*Client)(nil)
 
 // Client is a type that implements methods for GoatCounter API client
 type Client struct {
+	Code string
+
 	client      *http.Client
 	ratelimiter *rate.Limiter
 
@@ -53,6 +55,7 @@ func NewClient(code, token string) *Client {
 	path := fmt.Sprintf("https://%s/%s", host, version)
 
 	return &Client{
+		Code: code,
 		client: &http.Client{
 			Timeout: 10 * time.Second,
 		},

@@ -35,6 +35,6 @@ LABEL org.opencontainers.image.source https://github.com/DazWilkin/goatcounter-e
 
 COPY --from=build /go/bin/exporter /
 
-EXPOSE 9402
+EXPOSE 8080
 
 ENTRYPOINT ["/exporter"]
