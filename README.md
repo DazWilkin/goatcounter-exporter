@@ -9,8 +9,8 @@
 The exporter requires your GoatCounter code and an API token provided by the environment. The exports accepts a flag for `endpoint` of the exporter, and metrics `path`:
 
 ```bash
-export CODE="..."
-export TOKEN="..."
+CODE="..."
+TOKEN="..."
 
 HOST_PORT="8080"
 CONT_PORT="8080"
