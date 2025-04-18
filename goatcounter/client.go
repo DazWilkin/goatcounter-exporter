@@ -12,7 +12,6 @@ import (
 )
 
 const (
-	domain  string = "goatcounter.com"
 	version string = "api/v0"
 )
 
@@ -50,12 +49,10 @@ type Client struct {
 }
 
 // NewClient is a function that creates a new GoatCounter client
-func NewClient(code, token string) *Client {
-	host := fmt.Sprintf("%s.%s", code, domain)
-	path := fmt.Sprintf("https://%s/%s", host, version)
+func NewClient(endpoint, token string) *Client {
+	path := fmt.Sprintf("https://%s/%s", endpoint, version)
 
 	return &Client{
-		Code: code,
 		client: &http.Client{
 			Timeout: 10 * time.Second,
 		},

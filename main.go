@@ -42,6 +42,7 @@ var (
 )
 var (
 	endpoint    = flag.String("endpoint", ":8080", "The endpoint of the Exporter HTTP server")
+	instance    = flag.String("instance", "goatcounter.com", "The endpoint of the GoatCounter API")
 	metricsPath = flag.String("path", "/metrics", "The path on which Prometheus metrics will be served")
 )
 var (
@@ -64,20 +65,23 @@ func handleRoot(w http.ResponseWriter, _ *http.Request) {
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
+	// CODE represents
+	// Either a user-defined host on goatcounter.com
+	// Or, in combination with the instance flag, a host on a user-defined domain
 	code := os.Getenv(Code)
 	if code == "" {
-		logger.Info("Expected environment to contain variable",
+		logger.Info("Expected environment to contain 'CODE' variable",
 			"variable", Code,
 		)
 	}
 	token := os.Getenv(Token)
 	if token == "" {
-		logger.Info("Expected environment to contain variable",
+		logger.Info("Expected environment to contain 'TOKEN' variable",
 			"variable", Token,
 		)
 	}
 
-	// For endpoint and metricsPath
+	// For endpoint, instance and metricsPath
 	flag.Parse()
 
 	if GitCommit == "" {
@@ -87,7 +91,8 @@ func main() {
 		logger.Info("OSVersion value unchanged: expected to be set during build")
 	}
 
-	client := goatcounter.NewClient(code, token)
+	goatcounterEndpoint := fmt.Sprintf("%s.%s", code, *instance)
+	client := goatcounter.NewClient(goatcounterEndpoint, token)
 
 	registry := prometheus.NewRegistry()
 	registry.MustRegister(collector.NewExporterCollector(OSVersion, GoVersion, GitCommit, StartTime))

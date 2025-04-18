@@ -6,7 +6,7 @@
 
 ## Run
 
-The exporter requires your GoatCounter code and an API token provided by the environment. The exports accepts a flag for `endpoint` of the exporter, and metrics `path`:
+The exporter requires your GoatCounter code and an API token provided by the environment. The exports accepts a flag for `endpoint` of the exporter, an optional `instance` endpoint of the GoatCounter API, and a `metricsPath`:
 
 ```bash
 CODE="..."
@@ -23,7 +23,8 @@ podman run \
 --publish=${HOST_PORT}:${CONT_PORT}/tcp \
 ghcr.io/dazwilkin/goatcounter-exporter:f0704ae8644cc9f3becfc659d26be98b65bf0de7 \
 --endpoint=:${CONT_PORT} \
---path=/metrics
+--instance="goatcounter.com" \
+--path="/metrics"
 ```
 
 ## Prometheus
