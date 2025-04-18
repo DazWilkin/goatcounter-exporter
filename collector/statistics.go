@@ -29,7 +29,8 @@ func NewStatisticsCollector(client *goatcounter.Client, logger *slog.Logger) *St
 			"List total pageview counts",
 			[]string{},
 			prometheus.Labels{
-				"code": client.Code,
+				"code":     client.Code,
+				"instance": client.Instance,
 			},
 		),
 		Hits: prometheus.NewDesc(
@@ -40,7 +41,8 @@ func NewStatisticsCollector(client *goatcounter.Client, logger *slog.Logger) *St
 				"day",
 			},
 			prometheus.Labels{
-				"code": client.Code,
+				"code":     client.Code,
+				"instance": client.Instance,
 			},
 		),
 	}

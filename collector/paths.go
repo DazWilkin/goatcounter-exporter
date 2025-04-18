@@ -27,7 +27,8 @@ func NewPathsCollector(client *goatcounter.Client, logger *slog.Logger) *PathsCo
 			"List total of paths",
 			[]string{},
 			prometheus.Labels{
-				"code": client.Code,
+				"code":     client.Code,
+				"instance": client.Instance,
 			},
 		),
 	}

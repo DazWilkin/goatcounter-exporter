@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"html/template"
 	"log/slog"
 	"net/http"
@@ -101,8 +100,8 @@ func main() {
 		logger.Info("OSVersion value unchanged: expected to be set during build")
 	}
 
-	goatcounterEndpoint := fmt.Sprintf("%s.%s", code, *instance)
-	client := goatcounter.NewClient(goatcounterEndpoint, token)
+	// code and instance used as distinct labels
+	client := goatcounter.NewClient(code, *instance, token, logger)
 
 	registry := prometheus.NewRegistry()
 	registry.MustRegister(collector.NewExporterCollector(OSVersion, GoVersion, GitCommit, StartTime))
