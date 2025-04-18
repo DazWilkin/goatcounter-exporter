@@ -3,6 +3,7 @@ package goatcounter
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -32,12 +33,12 @@ func (c *UsersClient) Me() (*User, error) {
 	resp, err := c.client.Do(ctx, method, url, nil)
 	if err != nil {
 		msg := "unable to get information about the current user"
-		return user, fmt.Errorf(msg)
+		return user, errors.New(msg)
 	}
 
 	if err := json.Unmarshal(resp, user); err != nil {
 		msg := "unable to unmarshal response as user"
-		return user, fmt.Errorf(msg)
+		return user, errors.New(msg)
 	}
 
 	return user, nil

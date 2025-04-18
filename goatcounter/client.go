@@ -3,6 +3,7 @@ package goatcounter
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -68,7 +69,7 @@ func (c *Client) Do(ctx context.Context, method, url string, body io.Reader) ([]
 	rqst, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
 		msg := "unable to create GoatCounter HTTP request"
-		return []byte{}, fmt.Errorf(msg)
+		return []byte{}, errors.New(msg)
 	}
 
 	// Add Authorization header
@@ -91,7 +92,7 @@ func (c *Client) Do(ctx context.Context, method, url string, body io.Reader) ([]
 	// Always apply rate limiter to request
 	if err := c.ratelimiter.Wait(ctx); err != nil {
 		msg := "GoatCounter API request canceled or timed out"
-		return nil, fmt.Errorf(msg)
+		return nil, errors.New(msg)
 	}
 
 	resp, err := c.client.Do(rqst)
@@ -107,7 +108,7 @@ func (c *Client) Do(ctx context.Context, method, url string, body io.Reader) ([]
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		msg := "unable to read response body"
-		return nil, fmt.Errorf(msg)
+		return nil, errors.New(msg)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -117,7 +118,7 @@ func (c *Client) Do(ctx context.Context, method, url string, body io.Reader) ([]
 		}
 
 		msg := "unable to unmarshal error message"
-		return nil, fmt.Errorf(msg)
+		return nil, errors.New(msg)
 	}
 
 	return respBody, nil
@@ -144,7 +145,7 @@ func (c *Client) Count() (*Count, error) {
 
 	if err := json.Unmarshal(resp, count); err != nil {
 		msg := "unable to marshal response as count"
-		return count, fmt.Errorf(msg)
+		return count, errors.New(msg)
 	}
 
 	return count, nil

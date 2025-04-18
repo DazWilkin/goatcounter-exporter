@@ -3,6 +3,7 @@ package goatcounter
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -39,12 +40,12 @@ func (c *SitesClient) Get(ID string) (*Site, error) {
 			return site, fmt.Errorf("%s\n%+v", msg, errResponseor)
 		}
 
-		return site, fmt.Errorf(msg)
+		return site, errors.New(msg)
 	}
 
 	if err := json.Unmarshal(resp, site); err != nil {
 		msg := "unable to unmarshal response"
-		return site, fmt.Errorf(msg)
+		return site, errors.New(msg)
 	}
 
 	return site, nil
@@ -63,12 +64,12 @@ func (c *SitesClient) List() (*SitesResponse, error) {
 			return sitesResponse, fmt.Errorf("%s\n%+v", msg, errResponseor)
 		}
 
-		return sitesResponse, fmt.Errorf(msg)
+		return sitesResponse, errors.New(msg)
 	}
 
 	if err := json.Unmarshal(resp, sitesResponse); err != nil {
 		msg := "unable to unmarshal response"
-		return sitesResponse, fmt.Errorf(msg)
+		return sitesResponse, errors.New(msg)
 	}
 
 	return sitesResponse, nil

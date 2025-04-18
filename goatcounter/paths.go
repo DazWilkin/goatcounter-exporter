@@ -3,6 +3,7 @@ package goatcounter
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -50,12 +51,12 @@ func (c *PathsClient) List() (*PathsResponse, error) {
 				return pathsResponse, fmt.Errorf("%s\n%+v", msg, errResponseor)
 			}
 
-			return pathsResponse, fmt.Errorf(msg)
+			return pathsResponse, errors.New(msg)
 		}
 
 		if err := json.Unmarshal(resp, pathsResponse); err != nil {
 			msg := "unable to unmarshal response"
-			return pathsResponse, fmt.Errorf(msg)
+			return pathsResponse, errors.New(msg)
 		}
 
 		// Append this page's Paths to the overall tally

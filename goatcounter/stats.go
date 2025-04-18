@@ -3,6 +3,7 @@ package goatcounter
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -32,12 +33,12 @@ func (c *StatsClient) Hits() (*HitsResponse, error) {
 	resp, err := c.client.Do(ctx, method, url, nil)
 	if err != nil {
 		msg := "unable to get total pageview and visitor counts"
-		return hitsResponse, fmt.Errorf(msg)
+		return hitsResponse, errors.New(msg)
 	}
 
 	if err := json.Unmarshal(resp, hitsResponse); err != nil {
 		msg := "unable to unmarshal response"
-		return hitsResponse, fmt.Errorf(msg)
+		return hitsResponse, errors.New(msg)
 	}
 
 	return hitsResponse, nil
@@ -53,12 +54,12 @@ func (c *StatsClient) Total() (*Total, error) {
 	resp, err := c.client.Do(ctx, method, url, nil)
 	if err != nil {
 		msg := "unable to get total pageview counts"
-		return total, fmt.Errorf(msg)
+		return total, errors.New(msg)
 	}
 
 	if err := json.Unmarshal(resp, total); err != nil {
 		msg := "unable to unmarshal response"
-		return total, fmt.Errorf(msg)
+		return total, errors.New(msg)
 	}
 
 	return total, nil
