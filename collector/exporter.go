@@ -56,4 +56,5 @@ func (c *ExporterCollector) Collect(ch chan<- prometheus.Metric) {
 // Describe implements Prometheus' Collector interface and is used to describe metrics
 func (c *ExporterCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.StartTime
+	ch <- c.BuildInfo
 }
