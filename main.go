@@ -49,19 +49,29 @@ var (
 	tRoot = template.Must(template.New("root").Parse(sRoot))
 )
 
-func handleHealthz(w http.ResponseWriter, _ *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("ok"))
+func newHealthzHandler(logger *slog.Logger) http.HandlerFunc {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		if _, err := w.Write([]byte("ok")); err != nil {
+			logger.Error("unable to write healthz response", "err", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	}
 }
-func handleRoot(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
-	fmt.Fprint(w)
-	tRoot.Execute(w, struct {
-		Metrics string
-	}{
-		Metrics: *metricsPath,
-	})
+func newRootHandler(logger *slog.Logger) http.HandlerFunc {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "text/html; charset=UTF-8")
+		if err := tRoot.Execute(w, struct {
+			Metrics string
+		}{
+			Metrics: *metricsPath,
+		}); err != nil {
+			logger.Error("unable to execute root template", "err", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	}
 }
+
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
@@ -100,8 +110,8 @@ func main() {
 	registry.MustRegister(collector.NewStatisticsCollector(client, logger))
 
 	mux := http.NewServeMux()
-	mux.Handle("/", http.HandlerFunc(handleRoot))
-	mux.Handle("/healthz", http.HandlerFunc(handleHealthz))
+	mux.HandleFunc("/", newRootHandler(logger))
+	mux.HandleFunc("/healthz", newHealthzHandler(logger))
 	mux.Handle(*metricsPath, promhttp.HandlerFor(registry, promhttp.HandlerOpts{}))
 
 	logger.Info("Server starting",
@@ -110,5 +120,5 @@ func main() {
 	logger.Info("metrics path",
 		"path", *metricsPath,
 	)
-	logger.Error("Server failed", http.ListenAndServe(*endpoint, mux))
+	logger.Error("Server failed", "err", http.ListenAndServe(*endpoint, mux))
 }
