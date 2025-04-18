@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	version string = "api/v0"
+	Version string = "api/v0"
 )
 
 // ClientInterface is an interface that defines methods for GoatCounter API client
@@ -55,7 +55,7 @@ type Client struct {
 // NewClient is a function that creates a new GoatCounter client
 func NewClient(code, instance, token string, logger *slog.Logger) *Client {
 	logger = logger.With("goatcounter", "client")
-	path := fmt.Sprintf("https://%s.%s/%s", code, instance, version)
+	path := fmt.Sprintf("https://%s.%s/%s", code, instance, Version)
 
 	return &Client{
 		Code:     code,
@@ -69,6 +69,28 @@ func NewClient(code, instance, token string, logger *slog.Logger) *Client {
 
 		path:  path,
 		token: token,
+	}
+}
+
+// NewTestClient is a function that create a new GoatCounter test client
+// The test client is used by the tests that use prometheus/testutil
+// These require a local http endpoint
+// The code parameter is not used to form the API endpoint but it is used by metrics
+func NewTestClient(code, endpoint string, logger *slog.Logger) *Client {
+	logger = logger.With("goatcounter", "testclient")
+	path := fmt.Sprintf("%s/%s", endpoint, Version)
+
+	return &Client{
+		Code:     code,
+		Instance: endpoint,
+
+		client: &http.Client{
+			Timeout: 10 * time.Second,
+		},
+		ratelimiter: rate.NewLimiter(rate.Every(time.Second), 4),
+		logger:      logger,
+
+		path: path,
 	}
 }
 
