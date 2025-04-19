@@ -51,7 +51,9 @@ jobs:
           build-args: |
             VERSION=${{ env.VERSION }}
             COMMIT=${{ github.sha }}
-          tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
+          tags: |
+            ghcr.io/${{ env.REPO }}:latest
+            ghcr.io/${{ env.REPO }}:${{ github.sha }}
           push: true
       - name: Install Cosign
         uses: sigstore/cosign-installer@main
